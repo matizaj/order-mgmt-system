@@ -15,5 +15,5 @@ func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
 }
 
 func (h *Handler) HandleCreateOrder(w http.ResponseWriter, r *http.Request) {
-
+	w.Write([]byte("hello"))
 }
