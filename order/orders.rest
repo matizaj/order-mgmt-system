@@ -1,0 +1,7 @@
+###
+POST http://localhost:3030/api/customers/2/orders
+
+[
+    {"Id":"1", "Quantity":44},
+    {"Id":"2", "Quantity":3}
+]
