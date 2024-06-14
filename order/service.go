@@ -2,8 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
-
+	"log"
 	"github.com/matizaj/oms/common"
 	pb "github.com/matizaj/oms/common/api"
 )
@@ -25,6 +24,7 @@ func (s *service) ValidateOrder(ctx context.Context, order *pb.CreateOrderReques
 		return common.ErrNoItems
 	}
 	mergedItems := mergedItemsQuantity(order.Items)
+	log.Println("Merged items: ", mergedItems)
 	return nil
 }
 
@@ -43,6 +43,7 @@ func mergedItemsQuantity(items []*pb.ItemsWithQuantity) []*pb.ItemsWithQuantity{
 		if !found {
 			merged = append(merged, item)
 		}
-		return merged
+		
 	}
+	return merged
 }
