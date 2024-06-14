@@ -57,7 +57,7 @@ func (h *Handler) HandleCreateOrder(w http.ResponseWriter, r *http.Request) {
 func validateItems(items []*pb.ItemsWithQuantity) error{
 	log.Println("gateway validator payload")
 	if len(items)==0 {
-		return errors.New("items collection is empty")
+		return common.ErrNoItems
 	}
 
 	for _, i :=range items {

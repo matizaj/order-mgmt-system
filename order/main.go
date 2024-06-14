@@ -25,7 +25,7 @@ func main() {
 	orderSvc := NewService(orderStore)
 	orderSvc.CreateOrder(context.TODO())
 
-	NewGrpcHandler(grpcServer)
+	NewGrpcHandler(grpcServer, orderSvc)
 
 	log.Println("GRPC Server started ", grpcAddr)
 
