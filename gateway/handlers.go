@@ -7,16 +7,17 @@ import (
 
 	"github.com/matizaj/oms/common"
 	pb "github.com/matizaj/oms/common/api"
+	"github.com/matizaj/oms/gateway/gateway"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type Handler struct {
-	GrpcClient pb.OrderServiceClient
+	gtw gateway.OrdersGateway
 }
 
-func NewHandler(grpcClient pb.OrderServiceClient) *Handler {
-	return &Handler{GrpcClient: grpcClient}
+func NewHandler(gtw gateway.OrdersGateway) *Handler {
+	return &Handler{gtw}
 }
 
 func (h *Handler) RegisterRoutes(mux *http.ServeMux) {
@@ -36,7 +37,7 @@ func (h *Handler) HandleCreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order, err := h.GrpcClient.CreateOrder(r.Context(), &pb.CreateOrderRequest{
+	order, err := h.gtw.CreateOrder(r.Context(),&pb.CreateOrderRequest{
 		CustomerId: customerId,
 		Items: items,
 	})
