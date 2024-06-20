@@ -13,7 +13,7 @@ import (
 
 var (
 	addr = common.EnvString("GTW_ADDR", ":5000")
-	orderServiceAddr = common.EnvString("GTW_ADDR", ":9000")
+	orderServiceAddr = common.EnvString("GRPC_ADDR", ":9000")
 )
 
 func main() {
