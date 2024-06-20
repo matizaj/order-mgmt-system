@@ -8,8 +8,6 @@ import (
 	"github.com/matizaj/oms/common"
 	pb "github.com/matizaj/oms/common/api"
 	"github.com/matizaj/oms/gateway/gateway"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 type Handler struct {
@@ -41,16 +39,17 @@ func (h *Handler) HandleCreateOrder(w http.ResponseWriter, r *http.Request) {
 		CustomerId: customerId,
 		Items: items,
 	})
-	errStatus := status.Convert(err)
-	if errStatus != nil {
-		log.Print("some grpc erros")
-		if errStatus.Code() != codes.InvalidArgument {
-			common.WriteError(w, http.StatusBadRequest, errStatus.Message())
-			return
-		}
-		common.WriteError(w, http.StatusInternalServerError, "failed to create order")
-		return
-	}
+	// errStatus := status.Convert(err)
+	// if errStatus != nil {
+	// 	log.Print("some grpc erros")
+	// 	if errStatus.Code() != codes.InvalidArgument {
+	// 		common.WriteError(w, http.StatusBadRequest, errStatus.Message())
+	// 		return
+	// 	}
+	// 	common.WriteError(w, http.StatusInternalServerError, "failed to create order")
+	// 	return
+	// }
+	log.Println(err)
 
 	common.WriteJson(w, http.StatusCreated, order)
 }

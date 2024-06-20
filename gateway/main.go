@@ -10,11 +10,8 @@ import (
 
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/matizaj/oms/common"
-	pb "github.com/matizaj/oms/common/api"
 	"github.com/matizaj/oms/common/discovery/consul"
 	"github.com/matizaj/oms/gateway/gateway"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 var (
 	webPort = common.EnvString("HTTP_ADDR", ":3030")
