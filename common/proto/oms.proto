@@ -1,0 +1,34 @@
+syntax="proto3";
+package oms;
+option go_package="github.com/matizaj/oms/common";
+
+service OrderService {
+    rpc CreateOrder(CreateOrderRequest) returns(CreateOrderResponse);
+}
+
+message CreateOrderRequest {
+    string CustomerId = 1;
+    repeated ItemsWithQuantity Items=2;
+}
+
+message ItemsWithQuantity {
+    string Id=1;
+    int64 Quantity=2;
+}
+
+message Item {
+    string Id=1;
+    string Name =2;
+    int64 Quantity=3;
+    string PriceId=4;
+}
+
+message CreateOrderResponse {
+    Order Order=1;
+}
+message Order {
+    string Id=1;
+    string CustomerId=2;
+    string Status=3;
+    repeated Item Items=4;
+}
