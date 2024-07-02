@@ -3,19 +3,47 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net"
+	"strconv"
+	"time"
 
+	"github.com/matizaj/oms/common"
+	"github.com/matizaj/oms/common/discovery/consul"
 	pb "github.com/matizaj/oms/common/proto"
 	"google.golang.org/grpc"
 )
-const grpcAddr="localhost:50051"
-var serviceName = "orders"
+
+var (
+	serviceName = "orders"
+	consulAddr = common.EnvString("CONSUL_ADDR", "localhost:8500")
+	grpcAddr="localhost:50051"
+)
 
 type server struct {	
 	pb.OrderServiceServer
 }
 func main() {
+	instanceId :=  strconv.Itoa(rand.Int())
+	registry, err := consul.NewRegistry(consulAddr, serviceName)
+	if err != nil {
+		log.Fatalf("failed to register service %v\n", err)
+	}
 
+	if err := registry.Register(context.Background(),instanceId, serviceName, grpcAddr); err != nil {
+		log.Fatalf("failed to register gateway %v\n", err)
+	}
+	go func(){
+		for {
+			if err := registry.HealthCheck(instanceId, serviceName); err != nil {
+				log.Printf("health check failed %v\n", err)
+			}
+			time.Sleep(time.Second *3)
+		}
+	}()
+
+	defer registry.Unregister(context.Background(), instanceId, serviceName)
+	
 	store := NewStore()
 	service := NewOrderService(store)
 	service.CreateOrder(context.Background())
