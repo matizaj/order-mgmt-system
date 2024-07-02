@@ -11,14 +11,10 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/matizaj/oms/common"
 	"github.com/matizaj/oms/common/discovery/consul"
-	pb "github.com/matizaj/oms/common/proto"
 	"github.com/matizaj/oms/gateway/gateway"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 var  (
 	gtwAddr = common.EnvString("GTW_ADDR", ":7001")
-	grpcAddr = common.EnvString("GRPC_ADDR", "localhost:50051")
 	consulAddr = common.EnvString("CONSUL_ADDR", "localhost:8500")
 	serviceName = "gateway"
 )
@@ -35,17 +31,17 @@ func main() {
 	instanceId :=  strconv.Itoa(rand.Int())
 	registry, err := consul.NewRegistry(consulAddr, serviceName)
 	if err != nil {
-		log.Fatalf("failed to register service %v\n")
+		log.Fatalf("failed to register service %v\n", err)
 	}
 
 	if err := registry.Register(context.Background(),instanceId, serviceName, gtwAddr); err != nil {
-		log.Fatalf("failed to register gateway %v\n")
+		log.Fatalf("failed to register gateway %v\n", err)
 	}
 
 	go func(){
 		for {
 			if err := registry.HealthCheck(instanceId, serviceName); err != nil {
-
+				log.Printf("health check failed %v\n", err)
 			}
 			time.Sleep(time.Second *3)
 		}
@@ -56,7 +52,7 @@ func main() {
 	ordersGateway := gateway.NewGrpcGateway(registry)
 
 	mux := http.NewServeMux()
-	handler := NewHttpHandler()
+	handler := NewHttpHandler(ordersGateway)
 	handler.registerRoutes(mux)
 
 	log.Println("Gateway service is up and running on port ", gtwAddr)

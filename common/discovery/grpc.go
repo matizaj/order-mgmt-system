@@ -9,7 +9,7 @@ import (
 )
 
 func ServiceConnection(ctx context.Context, serviceName string, registry Registry) (*grpc.ClientConn, error ) {
-	addr, err := registry.Dicover(ctx, serviceName)
+	addr, err := registry.Discover(ctx, serviceName)
 	if err != nil {
 		return nil, err
 	}
