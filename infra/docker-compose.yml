@@ -27,4 +27,11 @@ services:
       ME_CONFIG_MONGODB_ADMINUSERNAME: go-admin
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://go-admin:password@mongo-orders:27017/
+
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+
   

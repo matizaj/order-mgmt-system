@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/matizaj/oms/common"
+	"github.com/matizaj/oms/common/broker"
 	"github.com/matizaj/oms/common/discovery/consul"
 	pb "github.com/matizaj/oms/common/proto"
 	"google.golang.org/grpc"
@@ -18,11 +19,15 @@ var (
 	serviceName = "orders"
 	consulAddr = common.EnvString("CONSUL_ADDR", "localhost:8500")
 	grpcAddr="localhost:50051"
+	amqpUser = "guest"
+	amqpPass ="guest"
+	amqpHost = "localhost"
+	amqpPort = "5672"
 )
 
-type server struct {	
-	pb.OrderServiceServer
-}
+// type server struct {	
+// 	pb.OrderServiceServer
+// }
 func main() {
 	instanceId :=  strconv.Itoa(rand.Int())
 	registry, err := consul.NewRegistry(consulAddr, serviceName)
@@ -54,10 +59,16 @@ func main() {
 		log.Fatalf("failed to listen on grpc port %v\n", err)
 	}
 	defer l.Close()
+
+	channel, close := broker.ConnectBroker(amqpUser, amqpPass, amqpHost, amqpPort)
+	defer func() {
+		close()
+		channel.Close()
+	}()
 	
 	grpcServer := grpc.NewServer()
-	server := server{}
-	pb.RegisterOrderServiceServer(grpcServer, &server)
+	grpcHandler := NewGrpcHandler(service, channel)
+	pb.RegisterOrderServiceServer(grpcServer, grpcHandler)
 	
 	log.Print("gRPC server is running")
 	if err := grpcServer.Serve(l); err != nil {
