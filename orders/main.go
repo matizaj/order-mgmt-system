@@ -9,6 +9,8 @@ import (
 	"google.golang.org/grpc"
 )
 const grpcAddr="localhost:50051"
+var serviceName = "orders"
+
 type server struct {	
 	pb.OrderServiceServer
 }
