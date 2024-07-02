@@ -55,7 +55,7 @@ import (
 	"log"
 	"strconv"
 	"strings"
-
+	"github.com/hashicorp/consul/api"
 	consul "github.com/hashicorp/consul/api"
 )
 type Registry struct {

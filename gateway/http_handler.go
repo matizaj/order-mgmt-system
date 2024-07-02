@@ -1,25 +1,22 @@
 package main
 
 import (
-	"context"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/matizaj/oms/common"
 	pb "github.com/matizaj/oms/common/proto"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/matizaj/oms/gateway/gateway"
 )
 
 type handler struct {
-	// gtw
-	grpcClient pb.OrderServiceClient
+	// gt
+	gateway gateway.OrderGateway
 }
 
-func NewHttpHandler(grpcClient pb.OrderServiceClient) *handler {
-	return &handler{grpcClient}
+func NewHttpHandler(gateway gateway.OrderGateway) *handler {
+	return &handler{gateway}
 }
 
 func (h *handler) registerRoutes(router *http.ServeMux) {	
@@ -40,19 +37,13 @@ func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) 
 		common.ErrorJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	
-	order :=  &pb.CreateOrderRequest{
+	orderReq := &pb.CreateOrderRequest{
 		CustomerId: customerId,
 		Items: items,
 	}
-	resp, err := h.grpcClient.CreateOrder(context.Background(),order)
+	resp, err := h.gateway.CreateOrder(r.Context(), orderReq)
 	if err != nil {
-		log.Printf("failed to create order %v\n", err)
-		errGrpc := status.Errorf(
-			codes.Internal,
-			fmt.Sprintf("failed to create order %v", err),
-		)
-		common.ErrorJson(w, http.StatusInternalServerError, errGrpc.Error())
+		common.ErrorJson(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 	common.WriteJson(w, http.StatusCreated, resp)
