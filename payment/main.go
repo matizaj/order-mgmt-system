@@ -12,6 +12,8 @@ import (
 	"github.com/matizaj/oms/common/broker"
 	"github.com/matizaj/oms/common/discovery/consul"
 	"google.golang.org/grpc"
+	"github.com/stripe/stripe-go/v79"
+	// "github.com/stripe/stripe-go/v79/customer"
 )
 
 var (
@@ -22,6 +24,7 @@ var (
 	amqpPass = common.EnvString("AMQP_PASS","guest")
 	amqpHost = common.EnvString("AMQP_HOST","localhost")
 	amqpPort = common.EnvString("AMQP_PORT","5672")
+	stripeKey = common.EnvString("STRIPE_KEY","5672")
 )
 
 func main() {
@@ -44,6 +47,10 @@ func main() {
 	}()
 
 	defer registry.Unregister(context.Background(), instanceId, serviceName)
+
+	//stripe setup
+
+	stripe.Key = stripeKey
 	
 
 	l, err := net.Listen("tcp", grpcAddr)
