@@ -11,8 +11,10 @@ import (
 	"github.com/matizaj/oms/common"
 	"github.com/matizaj/oms/common/broker"
 	"github.com/matizaj/oms/common/discovery/consul"
-	"google.golang.org/grpc"
+	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 	"github.com/stripe/stripe-go/v79"
+	"google.golang.org/grpc"
+	_ "github.com/joho/godotenv/autoload"
 	// "github.com/stripe/stripe-go/v79/customer"
 )
 
@@ -24,7 +26,7 @@ var (
 	amqpPass = common.EnvString("AMQP_PASS","guest")
 	amqpHost = common.EnvString("AMQP_HOST","localhost")
 	amqpPort = common.EnvString("AMQP_PORT","5672")
-	stripeKey = common.EnvString("STRIPE_KEY","5672")
+	stripeKey = common.EnvString("STRIPE_KEY","")
 )
 
 func main() {
@@ -65,7 +67,8 @@ func main() {
 		channel.Close()
 	}()
 
-	service := NewPaymentService()
+	stripeProcessor := stripeProcessor.NewStripeProcessor()
+	service := NewPaymentService(stripeProcessor)
 	amqpConsumer := NewConsumer(service)
 	amqpConsumer.Listen(channel)
 	

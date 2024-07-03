@@ -1,7 +1,6 @@
-package stripe
+package stripeProcessor
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/matizaj/oms/common"
@@ -14,25 +13,25 @@ var (
 	gtwAddr = common.EnvString("GTW_ADDR", "")
 )
 
-type stripeProcessor struct {
+type StripeProcessor struct {
 
 }
 
-func NewStripeProcessor() *stripeProcessor {
-	return &stripeProcessor{}
+func NewStripeProcessor() *StripeProcessor {
+	return &StripeProcessor{}
 }
 
-func (s *stripeProcessor)CreaterPaymentLink(in *pb.Order)(string, error) {
+func (s *StripeProcessor)CreaterPaymentLink(in *pb.Order)(string, error) {
 	log.Printf("Creationg payment link for order %v\n", in)
 	log.Printf("gtw address %v\n", gtwAddr)
-	domain:= "https://example.com"
+	domain:= "http://localhost:7001"
 	
 	var items []*stripe.CheckoutSessionLineItemParams
-	gatewaySuccessUrl:=fmt.Sprintf("%s/success.html", gtwAddr)
 
 	for _, item := range in.Items {
 		items = append(items, &stripe.CheckoutSessionLineItemParams{
-			Price: stripe.String(item.PriceId),
+			// Price: stripe.String(item.PriceId),
+			Price: stripe.String("price_1PYSN0EJEwxXWrvp5iF9aTfD"),
 			Quantity: stripe.Int64(item.Quantity),
 		})
 	}
@@ -40,7 +39,7 @@ func (s *stripeProcessor)CreaterPaymentLink(in *pb.Order)(string, error) {
 	params := &stripe.CheckoutSessionParams{
 		LineItems:items,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		SuccessURL: stripe.String(gatewaySuccessUrl),
+		SuccessURL: stripe.String(domain + "/success.html"),
 		CancelURL: stripe.String(domain + "/cancel.html"),
 	  }
 	result, err := session.New(params)
