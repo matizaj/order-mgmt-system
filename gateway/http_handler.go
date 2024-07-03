@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"log"
+
 	"net/http"
 
 	"github.com/matizaj/oms/common"
@@ -33,7 +34,7 @@ func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) 
 	}
 	
 	if err := validateItems(items); err != nil {
-		log.Printf("failed to create order %v\n", err)
+		log.Printf("failed to validate order %v\n", err)
 		common.ErrorJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -43,6 +44,7 @@ func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) 
 	}
 	resp, err := h.gateway.CreateOrder(r.Context(), orderReq)
 	if err != nil {
+		log.Printf("failed to validate order %v\n", err)
 		common.ErrorJson(w, http.StatusInternalServerError, err.Error())
 		return
 	}
