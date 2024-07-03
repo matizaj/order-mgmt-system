@@ -26,6 +26,15 @@ func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest
 			Id: "1",
 			CustomerId: "43",
 			Status: "success",
+			Items: []*pb.Item{
+				{
+					Id: "1",
+					Name: "rope",
+					Quantity: 1,
+					PriceId: "1",
+				},
+
+			},
 		},
 	}
 	
@@ -38,7 +47,7 @@ func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest
 	if err != nil {
 		return nil, err
 	}
-
+	log.Printf("order %v, %v", order, marshalledOrder)
 	h.queue.PublishWithContext(ctx, "", q.Name, false, false, amqp.Publishing{
 		ContentType: "application/json",
 		Body: marshalledOrder,

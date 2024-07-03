@@ -15,7 +15,6 @@ import (
 	"github.com/stripe/stripe-go/v79"
 	"google.golang.org/grpc"
 	_ "github.com/joho/godotenv/autoload"
-	// "github.com/stripe/stripe-go/v79/customer"
 )
 
 var (
@@ -51,7 +50,6 @@ func main() {
 	defer registry.Unregister(context.Background(), instanceId, serviceName)
 
 	//stripe setup
-
 	stripe.Key = stripeKey
 	
 

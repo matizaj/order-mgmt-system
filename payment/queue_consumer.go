@@ -34,12 +34,13 @@ func (c *consumer) Listen(ch *amqp.Channel) {
 	go func(){
 		for msg := range msgs {
 			log.Printf("Reveived message %v\n", msg.Body)
-			o:= &pb.Order{}
+			o:= &pb.CreateOrderResponse{}
 
 			if err := json.Unmarshal(msg.Body, o); err != nil {
 				log.Printf("failed to unmarshal order %v\n", err)
 				continue
-			}
+			} 
+			log.Printf("ORDER %v\n", o)
 			paymentLint, err := c.service.CreatePayment(context.Background(), o)
 			if err != nil {
 				log.Printf("failed to create payment %v\n", err)

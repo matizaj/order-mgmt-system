@@ -7,5 +7,5 @@ import (
 )
 
 type PaymentService interface {
-	CreatePayment(context.Context, *pb.Order)(string, error)
+	CreatePayment(context.Context, *pb.CreateOrderResponse)(string, error)
 }

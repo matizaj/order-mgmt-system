@@ -21,30 +21,30 @@ func NewStripeProcessor() *StripeProcessor {
 	return &StripeProcessor{}
 }
 
-func (s *StripeProcessor)CreaterPaymentLink(in *pb.Order)(string, error) {
+func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, error) {
 	log.Printf("Creationg payment link for order %v\n", in)
 	log.Printf("gtw address %v\n", gtwAddr)
-	domain:= "http://localhost:7001"
 	
 	var items []*stripe.CheckoutSessionLineItemParams
 
-	for _, item := range in.Items {
+	for _, item := range in.Order.Items {
 		items = append(items, &stripe.CheckoutSessionLineItemParams{
 			// Price: stripe.String(item.PriceId),
 			Price: stripe.String("price_1PYSN0EJEwxXWrvp5iF9aTfD"),
 			Quantity: stripe.Int64(item.Quantity),
 		})
 	}
-
+	log.Printf("Line ITEMS %v\n", items)
 	params := &stripe.CheckoutSessionParams{
-		LineItems:items,
+		LineItems: items,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		SuccessURL: stripe.String(domain + "/success.html"),
-		CancelURL: stripe.String(domain + "/cancel.html"),
+		SuccessURL: stripe.String(gtwAddr + "/success.html"),
+		CancelURL: stripe.String(gtwAddr + "/cancel.html"),
 	  }
 	result, err := session.New(params)
 	if err != nil {
-		return "", nil	
+		log.Printf("l;ink error %v\n", err)
+		return "", err	
 	}
 	return result.URL, nil
 }

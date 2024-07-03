@@ -1,7 +1,9 @@
-package main 
+package main
 
 import (
 	"context"
+	"log"
+
 	pb "github.com/matizaj/oms/common/proto"
 	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 )
@@ -15,10 +17,11 @@ func NewPaymentService(stripeProcessor *stripeProcessor.StripeProcessor) *servic
 	return &service{stripeProcessor}
 }
 
-func (s service) CreatePayment(ctx context.Context, in *pb.Order)(string, error) {
+func (s service) CreatePayment(ctx context.Context, in *pb.CreateOrderResponse)(string, error) {
 	// connect to payment processor
 	link, err:=  stripeProcessor.NewStripeProcessor().CreaterPaymentLink(in)
 	if err != nil {
+		log.Printf("stripe failed %v\n", err)
 		return "", err
 	}
 	return link, nil
