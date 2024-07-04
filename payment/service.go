@@ -5,15 +5,16 @@ import (
 	"log"
 
 	pb "github.com/matizaj/oms/common/proto"
+	"github.com/matizaj/oms/payment/processors"
 	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 )
 
 type service struct {
 	// gateway
-	stripeProcessor *stripeProcessor.StripeProcessor
+	stripeProcessor processors.PaymentProcessor
 }
 
-func NewPaymentService(stripeProcessor *stripeProcessor.StripeProcessor) *service {
+func NewPaymentService(stripeProcessor processors.PaymentProcessor) *service {
 	return &service{stripeProcessor}
 }
 

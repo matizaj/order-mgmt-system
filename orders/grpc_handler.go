@@ -31,7 +31,7 @@ func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest
 					Id: "1",
 					Name: "rope",
 					Quantity: 1,
-					PriceId: "1",
+					PriceId: "price_1PYSN0EJEwxXWrvp5iF9aTfD",
 				},
 
 			},
