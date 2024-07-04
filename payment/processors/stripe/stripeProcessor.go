@@ -23,7 +23,6 @@ func NewStripeProcessor() *StripeProcessor {
 
 func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, error) {
 	log.Printf("Creationg payment link for order %v\n", in)
-	log.Printf("gtw address %v\n", gtwAddr)
 	
 	var items []*stripe.CheckoutSessionLineItemParams
 
@@ -34,7 +33,6 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 			Quantity: stripe.Int64(item.Quantity),
 		})
 	}
-	log.Printf("Line ITEMS %v\n", items)
 	params := &stripe.CheckoutSessionParams{
 		LineItems: items,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
@@ -43,7 +41,7 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 	  }
 	result, err := session.New(params)
 	if err != nil {
-		log.Printf("l;ink error %v\n", err)
+		log.Printf("link error %v\n", err)
 		return "", err	
 	}
 	return result.URL, nil

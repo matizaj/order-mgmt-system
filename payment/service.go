@@ -6,7 +6,6 @@ import (
 
 	pb "github.com/matizaj/oms/common/proto"
 	"github.com/matizaj/oms/payment/processors"
-	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 )
 
 type service struct {
@@ -18,9 +17,9 @@ func NewPaymentService(stripeProcessor processors.PaymentProcessor) *service {
 	return &service{stripeProcessor}
 }
 
-func (s service) CreatePayment(ctx context.Context, in *pb.CreateOrderResponse)(string, error) {
+func (s *service) CreatePayment(ctx context.Context, in *pb.CreateOrderResponse)(string, error) {
 	// connect to payment processor
-	link, err:=  stripeProcessor.NewStripeProcessor().CreaterPaymentLink(in)
+	link, err:= s.stripeProcessor.CreaterPaymentLink(in)
 	if err != nil {
 		log.Printf("stripe failed %v\n", err)
 		return "", err
