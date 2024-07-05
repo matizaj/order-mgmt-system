@@ -9,6 +9,8 @@ import (
 	"github.com/matizaj/oms/common"
 	pb "github.com/matizaj/oms/common/proto"
 	"github.com/matizaj/oms/gateway/gateway"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type handler struct {
@@ -49,7 +51,7 @@ func (h *handler) createOrder(w http.ResponseWriter, r *http.Request) {
 		common.ErrorJson(w, http.StatusInternalServerError, err.Error())
 		return
 	}
-	common.WriteJson(w, http.StatusOK, resp)
+	common.WriteJson(w, http.StatusCreated, resp)
 }
 
 func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) {
@@ -58,14 +60,15 @@ func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) 
 
 	resp, err := h.gateway.GetOrder(r.Context(), customerId, orderId)
 	if err != nil {
-		common.ErrorJson(w, http.StatusBadRequest, err.Error())
+		grpcErr := status.Errorf(codes.InvalidArgument,"")
+		common.ErrorJson(w, http.StatusBadRequest, grpcErr.Error())
 		return
 	}
 	log.Printf("order %v\n", resp)
 
 	
 	
-	common.WriteJson(w, http.StatusCreated, resp)
+	common.WriteJson(w, http.StatusOK, resp)
 }
 
 func validateItems(items []*pb.ItemsWithQuantity) error {

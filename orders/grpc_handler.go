@@ -20,24 +20,13 @@ func NewGrpcHandler(service OrderService, queue *amqp.Channel) *grpcHandler {
 }
 
 func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
-	log.Printf("New order received %v\n", in)
-	order := &pb.CreateOrderResponse{
-		Order: &pb.Order{
-			Id: "1",
-			CustomerId: "43",
-			Status: "success",
-			Items: []*pb.Item{
-				{
-					Id: "1",
-					Name: "rope",
-					Quantity: 1,
-					PriceId: "price_1PYSN0EJEwxXWrvp5iF9aTfD",
-				},
-
-			},
-		},
-	}
+	log.Printf("New order received %v\n", in)	
 	
+	order , err := h.service.CreateOrder(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+
 	q, err := h.queue.QueueDeclare(broker.OrderCreatedEvent, true, false, false,false, nil)
 	if err != nil {
 		return nil, err
@@ -58,23 +47,12 @@ func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest
 
 func (h *grpcHandler) GetOrder(ctx context.Context, in *pb.GetOrderRequest) (*pb.GetOrderResponse, error) {
 	log.Printf("invoking get order with %v", in)
-	// query db
-
-	order := &pb.GetOrderResponse{
-		Order: &pb.Order{
-			Id: in.OrderId,
-			CustomerId: in.CustomerId,
-			Status: "success",
-			Items: []*pb.Item{
-				{
-					Id: "1",
-					Name: "rope",
-					Quantity: 5,
-					PriceId: "1111--2222-333",
-				},
-			},
-		},
+	
+	order, err := h.service.GetOrder(ctx, in)
+	if err != nil {
+		return nil, err
 	}
+	
 	return order, nil
 
 }

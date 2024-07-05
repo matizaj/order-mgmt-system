@@ -12,3 +12,7 @@ func NewStore() *store {
 func (s *store) Create(ctx context.Context) error {
 	return nil
 }
+
+func (s *store) Get(ctx context.Context) error {
+	return nil
+}

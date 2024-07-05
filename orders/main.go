@@ -51,7 +51,6 @@ func main() {
 	
 	store := NewStore()
 	service := NewOrderService(store)
-	service.CreateOrder(context.Background())
 
 
 	l, err := net.Listen("tcp", grpcAddr)
