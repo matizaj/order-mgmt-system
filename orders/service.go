@@ -19,8 +19,7 @@ func NewOrderService(store OrderStore) *service {
 func (s *service) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
 	order := &pb.CreateOrderResponse{
 		Order: &pb.Order{
-			Id: "1",
-			CustomerId: "43",
+			CustomerId: "1",
 			Status: "success",
 			Items: []*pb.Item{
 				{
@@ -32,6 +31,15 @@ func (s *service) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*
 				
 			},
 		},
+	}
+	orderToStore := Order{
+		Order: order.Order,
+		}
+	
+	
+	err := s.store.Create(ctx, orderToStore)
+	if err != nil {
+		return nil, err
 	}
 	return order, nil
 }

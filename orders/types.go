@@ -12,6 +12,10 @@ type OrderService interface {
 }
 
 type OrderStore interface {
-	Create(context.Context) error
-	Get(context.Context) error
+	Create(ctx context.Context, order Order) error
+	Get(ctx context.Context, customerId, orderId string) *Order
+}
+
+type Order struct {
+	Order *pb.Order
 }
