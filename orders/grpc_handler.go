@@ -56,3 +56,25 @@ func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest
 	return order, nil
 }
 
+func (h *grpcHandler) GetOrder(ctx context.Context, in *pb.GetOrderRequest) (*pb.GetOrderResponse, error) {
+	log.Printf("invoking get order with %v", in)
+	// query db
+
+	order := &pb.GetOrderResponse{
+		Order: &pb.Order{
+			Id: in.OrderId,
+			CustomerId: in.CustomerId,
+			Status: "success",
+			Items: []*pb.Item{
+				{
+					Id: "1",
+					Name: "rope",
+					Quantity: 5,
+					PriceId: "1111--2222-333",
+				},
+			},
+		},
+	}
+	return order, nil
+
+}

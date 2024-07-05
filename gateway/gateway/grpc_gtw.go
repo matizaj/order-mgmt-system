@@ -20,7 +20,7 @@ func NewGrpcGateway(registry discovery.Registry) *gateway {
 }
 
 func (g *gateway) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
-
+	// TODO: create fun to reuse for getting grpc connection
 	gRPConn , err := discovery.ServiceConnection(ctx, "orders", g.registry)
 	if err != nil {
 		return nil, err
@@ -43,4 +43,27 @@ func (g *gateway) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*
 	}
 
 	return o, nil
+}
+
+func (g *gateway) GetOrder(ctx context.Context, customerId, orderId string) (*pb.GetOrderResponse, error) {
+	log.Printf("client invoke get order")
+
+	gRPConn , err := discovery.ServiceConnection(ctx, "orders", g.registry)
+	if err != nil {
+		return nil, err
+	}
+
+	grpcClient := pb.NewOrderServiceClient(gRPConn)
+	log.Println(grpcClient)
+
+	req := &pb.GetOrderRequest{
+		CustomerId: customerId,
+		OrderId: orderId,
+	}
+	result, err := grpcClient.GetOrder(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 }

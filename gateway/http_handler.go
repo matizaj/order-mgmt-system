@@ -21,11 +21,12 @@ func NewHttpHandler(gateway gateway.OrderGateway) *handler {
 }
 
 func (h *handler) registerRoutes(router *http.ServeMux) {	
-	router.HandleFunc("POST /api/customers/{customerId}/orders", h.getOrdersByCustomerId)
+	router.HandleFunc("POST /api/customers/{customerId}/orders", h.createOrder)
+	router.HandleFunc("GET /api/customers/{customerId}/orders/{orderId}", h.getOrdersByCustomerId)
 }
 
 
-func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) {
+func (h *handler) createOrder(w http.ResponseWriter, r *http.Request) {
 	customerId := r.PathValue("customerId")
 	items := []*pb.ItemsWithQuantity{}
 	if err := common.ReadJson(r, &items); err != nil {
@@ -48,6 +49,22 @@ func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) 
 		common.ErrorJson(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+	common.WriteJson(w, http.StatusOK, resp)
+}
+
+func (h *handler) getOrdersByCustomerId(w http.ResponseWriter, r *http.Request) {
+	customerId := r.PathValue("customerId")
+	orderId := r.PathValue("orderId")
+
+	resp, err := h.gateway.GetOrder(r.Context(), customerId, orderId)
+	if err != nil {
+		common.ErrorJson(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	log.Printf("order %v\n", resp)
+
+	
+	
 	common.WriteJson(w, http.StatusCreated, resp)
 }
 

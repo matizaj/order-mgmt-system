@@ -4,6 +4,16 @@ option go_package="github.com/matizaj/oms/common";
 
 service OrderService {
     rpc CreateOrder(CreateOrderRequest) returns(CreateOrderResponse);
+    rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+}
+
+message GetOrderRequest {
+    string CustomerId =1;
+    string OrderId=2;
+}
+
+message GetOrderResponse {
+    Order Order=1;
 }
 
 message CreateOrderRequest {

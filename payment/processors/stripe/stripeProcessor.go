@@ -1,6 +1,7 @@
 package stripeProcessor
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/matizaj/oms/common"
@@ -25,6 +26,8 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 	log.Printf("Creationg payment link for order %v\n", in)
 	
 	var items []*stripe.CheckoutSessionLineItemParams
+	gtwSuccessUrl := fmt.Sprintf("%s/success.html/customerId=%s&orderId=%s", gtwAddr, in.Order.CustomerId, in.Order.Id)
+	gtwCancelUrl := fmt.Sprintf("%s/cancel.html", gtwAddr)
 
 	for _, item := range in.Order.Items {
 		items = append(items, &stripe.CheckoutSessionLineItemParams{
@@ -36,8 +39,8 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 	params := &stripe.CheckoutSessionParams{
 		LineItems: items,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
-		SuccessURL: stripe.String(gtwAddr + "/success.html"),
-		CancelURL: stripe.String(gtwAddr + "/cancel.html"),
+		SuccessURL: stripe.String(gtwSuccessUrl),
+		CancelURL: stripe.String(gtwCancelUrl),
 	  }
 	result, err := session.New(params)
 	if err != nil {
