@@ -45,23 +45,21 @@ func (s *service) CreateOrder(ctx context.Context, items []*pb.Item, in *pb.Crea
 }
 
 func (s *service) GetOrder(ctx context.Context, in *pb.GetOrderRequest) (*pb.GetOrderResponse, error) {
-	order := &pb.GetOrderResponse{
-		Order: &pb.Order{
-			Id: in.OrderId,
-			CustomerId: in.CustomerId,
-			Status: "success",
-			Items: []*pb.Item{
-				{
-					Id: "1",
-					Name: "rope",
-					Quantity: 5,
-					PriceId: "1111--2222-333",
-				},
-			},
-		},
+	order, err := s.store.Get(ctx, in.CustomerId, in.OrderId)
+	if err != nil {
+		return nil, err
 	}
+	o := &pb.GetOrderResponse{
+		Order: &pb.Order{
+			Id: order.Order.Id,
+			CustomerId: order.Order.CustomerId,
+			Status: "success",
+			Items: order.Order.Items,
+			},
+		}
+	
 
-	return order, nil
+	return o, nil
 }
 
 func (s *service) ValidateOrder(ctx context.Context, in *pb.CreateOrderRequest) ([]*pb.Item, error)	 {

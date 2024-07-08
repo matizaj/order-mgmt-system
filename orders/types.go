@@ -13,7 +13,7 @@ type OrderService interface {
 
 type OrderStore interface {
 	Create(ctx context.Context, order Order) error
-	Get(ctx context.Context, customerId, orderId string) *Order
+	Get(ctx context.Context, customerId, orderId string) (*Order, error)
 }
 
 type Order struct {
