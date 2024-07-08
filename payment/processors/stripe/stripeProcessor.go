@@ -26,7 +26,7 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 	log.Printf("Creationg payment link for order %v\n", in)
 	
 	var items []*stripe.CheckoutSessionLineItemParams
-	gtwSuccessUrl := fmt.Sprintf("%s/success.html/customerId=%s&orderId=%s", gtwAddr, in.Order.CustomerId, in.Order.Id)
+	gtwSuccessUrl := fmt.Sprintf("%s/success.html?customerId=%s&orderId=%s", gtwAddr, in.Order.CustomerId, in.Order.Id)
 	gtwCancelUrl := fmt.Sprintf("%s/cancel.html", gtwAddr)
 
 	for _, item := range in.Order.Items {

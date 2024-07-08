@@ -114,12 +114,12 @@
 </body>
 <script>
   const urlParams = new URLSearchParams(window.location.search);
-  const customerID = urlParams.get('customerId');
-  const orderID = urlParams.get('orderId');
+  const customerId = urlParams.get('customerId');
+  const orderId = urlParams.get('orderId');
 
   const order = {
-    customerID,
-    orderID,
+    customerId,
+    orderId,
     status: "pending"
   };
 
