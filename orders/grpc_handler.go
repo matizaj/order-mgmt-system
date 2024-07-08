@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-
 	"github.com/matizaj/oms/common/broker"
 	pb "github.com/matizaj/oms/common/proto"
 	amqp "github.com/rabbitmq/amqp091-go"
@@ -21,8 +20,12 @@ func NewGrpcHandler(service OrderService, queue *amqp.Channel) *grpcHandler {
 
 func (h *grpcHandler) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
 	log.Printf("New order received %v\n", in)	
-	
-	order , err := h.service.CreateOrder(ctx, in)
+
+	items, err := h.service.ValidateOrder(ctx, in)
+	if err != nil {
+		return nil, err
+	}
+	order , err := h.service.CreateOrder(ctx, items, in)
 	if err != nil {
 		return nil, err
 	}

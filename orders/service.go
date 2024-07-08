@@ -16,7 +16,7 @@ func NewOrderService(store OrderStore) *service {
 	return &service{store}
 }
 
-func (s *service) CreateOrder(ctx context.Context, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
+func (s *service) CreateOrder(ctx context.Context, items []*pb.Item, in *pb.CreateOrderRequest) (*pb.CreateOrderResponse, error) {
 	order := &pb.CreateOrderResponse{
 		Order: &pb.Order{
 			CustomerId: "1",
@@ -64,15 +64,19 @@ func (s *service) GetOrder(ctx context.Context, in *pb.GetOrderRequest) (*pb.Get
 	return order, nil
 }
 
-func (s *service) ValidateOrder(ctx context.Context, in *pb.CreateOrderRequest) error	 {
+func (s *service) ValidateOrder(ctx context.Context, in *pb.CreateOrderRequest) ([]*pb.Item, error)	 {
 	if len(in.Items) <= 0 {
-		return errors.New("invalid items quantity")
+		return nil, errors.New("invalid items quantity")
 	}
 	mergeItems := mergItemsQuantity(in.Items)
 
 	// validate stock service
 	log.Println(mergeItems)
-	return nil
+	items, err := checkStockAvailability(ctx, mergeItems)
+	if err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 func mergItemsQuantity(itemsWithQuantity []*pb.ItemsWithQuantity) []*pb.ItemsWithQuantity{
@@ -92,4 +96,17 @@ func mergItemsQuantity(itemsWithQuantity []*pb.ItemsWithQuantity) []*pb.ItemsWit
 		}
 	}
 	return merged
+}
+
+func checkStockAvailability(ctx context.Context, mergedItems []*pb.ItemsWithQuantity) ([]*pb.Item, error) {
+	items := []*pb.Item{}
+	for _, i := range mergedItems {
+		items = append(items, &pb.Item{
+			Id: i.Id,
+			Quantity: i.Quantity,
+			PriceId: "test",
+			Name: "default name",
+		})
+	}
+	return items, nil
 }
