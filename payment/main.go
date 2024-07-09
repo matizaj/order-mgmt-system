@@ -5,16 +5,17 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"net/http"
 	"strconv"
 	"time"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/matizaj/oms/common"
 	"github.com/matizaj/oms/common/broker"
 	"github.com/matizaj/oms/common/discovery/consul"
 	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 	"github.com/stripe/stripe-go/v79"
 	"google.golang.org/grpc"
-	_ "github.com/joho/godotenv/autoload"
 )
 
 var (
@@ -26,6 +27,7 @@ var (
 	amqpHost = common.EnvString("AMQP_HOST","localhost")
 	amqpPort = common.EnvString("AMQP_PORT","5672")
 	stripeKey = common.EnvString("STRIPE_KEY","")
+	paymentHttpAddr = common.EnvString("PAYMENT_GTW",":7002")
 )
 
 func main() {
@@ -69,6 +71,18 @@ func main() {
 	service := NewPaymentService(stripeProcessor)
 	amqpConsumer := NewConsumer(service)
 	amqpConsumer.Listen(channel)
+
+	// http server 
+	mux := http.NewServeMux()
+	handler := NewPaymentHandler(channel)
+	handler.registerRoutes(mux)
+
+	go func() {
+		log.Printf("Payment http server is up and running on port %s", paymentHttpAddr)
+		if err := http.ListenAndServe(paymentHttpAddr, mux); err != nil {
+			log.Fatal("failed to start payment http server")
+		}
+	}()
 	
 	grpcServer := grpc.NewServer()
 	
