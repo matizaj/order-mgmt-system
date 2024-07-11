@@ -28,6 +28,7 @@ var (
 	amqpPort = common.EnvString("AMQP_PORT","5672")
 	stripeKey = common.EnvString("STRIPE_KEY","")
 	paymentHttpAddr = common.EnvString("PAYMENT_GTW",":7002")
+	endpointStripeSecret = common.EnvString("STRIPE_ENDPOINT_SECRET","whsec_...")
 )
 
 func main() {
