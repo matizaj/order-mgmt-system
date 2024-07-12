@@ -25,6 +25,9 @@ func NewHttpHandler(gateway gateway.OrderGateway) *handler {
 func (h *handler) registerRoutes(router *http.ServeMux) {	
 	router.HandleFunc("POST /api/customers/{customerId}/orders", h.createOrder)
 	router.HandleFunc("GET /api/customers/{customerId}/orders/{orderId}", h.getOrdersByCustomerId)
+	router.HandleFunc("GET /ok", func (w http.ResponseWriter, r *http.Request)  {
+		w.Write([]byte("/health"))
+	  })
 
 	// serve static files
 	router.Handle("/", http.FileServer(http.Dir("public")))

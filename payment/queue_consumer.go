@@ -50,7 +50,5 @@ func (c *consumer) Listen(ch *amqp.Channel) {
 			log.Printf("Payment link %s\n", paymentLint)
 		}
 	}()
-
 	<-forever
-
 }

@@ -21,8 +21,12 @@ func NewPaymentHandler(channel *amqp.Channel) *PaymentHTTPHandler {
 	return &PaymentHTTPHandler{channel}
 }
 
+
 func (h *PaymentHTTPHandler) registerRoutes(router *http.ServeMux) {
-	router.HandleFunc("/weebhook", h.handleWebhookCheckout)
+	router.HandleFunc("POST /webhook", h.handleWebhookCheckout)
+  router.HandleFunc("GET /ok", func (w http.ResponseWriter, r *http.Request)  {
+    w.Write([]byte("ok"))
+  })
 }
 
 func (h *PaymentHTTPHandler) handleWebhookCheckout(w http.ResponseWriter, r *http.Request) {

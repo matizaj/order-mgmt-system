@@ -27,11 +27,12 @@ var (
 	amqpHost = common.EnvString("AMQP_HOST","localhost")
 	amqpPort = common.EnvString("AMQP_PORT","5672")
 	stripeKey = common.EnvString("STRIPE_KEY","")
-	paymentHttpAddr = common.EnvString("PAYMENT_GTW",":7002")
+	paymentHttpAddr = common.EnvString("PAYMENT_GTW","localhost:7002")
 	endpointStripeSecret = common.EnvString("STRIPE_ENDPOINT_SECRET","whsec_...")
 )
 
 func main() {
+	
 	instanceId :=  strconv.Itoa(rand.Int())
 	registry, err := consul.NewRegistry(consulAddr, serviceName)
 	if err != nil {
@@ -62,6 +63,7 @@ func main() {
 	}
 	defer l.Close()
 
+
 	channel, close := broker.ConnectBroker(amqpUser, amqpPass, amqpHost, amqpPort)
 	defer func() {
 		close()
@@ -71,13 +73,13 @@ func main() {
 	stripeProcessor := stripeProcessor.NewStripeProcessor()
 	service := NewPaymentService(stripeProcessor)
 	amqpConsumer := NewConsumer(service)
-	amqpConsumer.Listen(channel)
+	go amqpConsumer.Listen(channel)
 
 	// http server 
 	mux := http.NewServeMux()
 	handler := NewPaymentHandler(channel)
 	handler.registerRoutes(mux)
-
+	
 	go func() {
 		log.Printf("Payment http server is up and running on port %s", paymentHttpAddr)
 		if err := http.ListenAndServe(paymentHttpAddr, mux); err != nil {
