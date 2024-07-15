@@ -37,6 +37,7 @@ func (s *StripeProcessor)CreaterPaymentLink(in *pb.CreateOrderResponse)(string, 
 		})
 	}
 	params := &stripe.CheckoutSessionParams{
+		Metadata: map[string]string{"orderId":in.Order.Id, "customerId": in.Order.CustomerId},
 		LineItems: items,
 		Mode: stripe.String(string(stripe.CheckoutSessionModePayment)),
 		SuccessURL: stripe.String(gtwSuccessUrl),

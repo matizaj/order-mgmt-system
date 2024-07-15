@@ -13,6 +13,7 @@ import (
 	"github.com/matizaj/oms/common"
 	"github.com/matizaj/oms/common/broker"
 	"github.com/matizaj/oms/common/discovery/consul"
+	"github.com/matizaj/oms/payment/gateway"
 	stripeProcessor "github.com/matizaj/oms/payment/processors/stripe"
 	"github.com/stripe/stripe-go/v79"
 	"google.golang.org/grpc"
@@ -69,9 +70,10 @@ func main() {
 		close()
 		channel.Close()
 	}()
-
+	
+	paymentGtw := gateway.NewPaymentGateway(registry)
 	stripeProcessor := stripeProcessor.NewStripeProcessor()
-	service := NewPaymentService(stripeProcessor)
+	service := NewPaymentService(stripeProcessor, paymentGtw)
 	amqpConsumer := NewConsumer(service)
 	go amqpConsumer.Listen(channel)
 
