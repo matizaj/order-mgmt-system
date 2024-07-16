@@ -5,6 +5,7 @@ option go_package="github.com/matizaj/oms/common";
 service OrderService {
     rpc CreateOrder(CreateOrderRequest) returns(CreateOrderResponse);
     rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+    rpc UpdateOrder(Order) returns (Order);
 }
 
 message GetOrderRequest {
@@ -41,4 +42,5 @@ message Order {
     string CustomerId=2;
     string Status=3;
     repeated Item Items=4;
+    string PaymentLink=5;
 }

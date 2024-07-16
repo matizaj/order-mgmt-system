@@ -29,11 +29,12 @@ func (g *gateway) UpdateOrderAfterPaymentLink(ctx context.Context, orderId, paym
 	grpcClient := pb.NewOrderServiceClient(gRPConn)
 
 	
-	err = grpcClient.UpdateOrder(ctx, &pb.Order{
+	order, err := grpcClient.UpdateOrder(ctx, &pb.Order{
 		Id: orderId,
 		Status: "waiting_for_payment",
 		PaymentLink: paymentLink,
 	})
+	log.Panicln(order)
 	if err != nil {
 		log.Printf("failed to create order %v\n", err)
 		errGrpc := status.Errorf(

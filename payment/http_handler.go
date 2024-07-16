@@ -76,6 +76,7 @@ func (h *PaymentHTTPHandler) handleWebhookCheckout(w http.ResponseWriter, r *htt
       Id: orderId,
       CustomerId: customerId,
       Status: "paid",
+      PaymentLink: "",
     }
     marshalledOrder, _ := json.Marshal(o)
     defer cancel()
